@@ -65,6 +65,7 @@ const mapToOraObjectType = {
   typeBody: "TYPE BODY",
   table: "TABLE",
   synonym: "SYNONYM",
+  materializedView: "MATERIALIZED VIEW",
 };
 
 const mapToOraObjectTypeAlt = {
@@ -72,6 +73,7 @@ const mapToOraObjectTypeAlt = {
   packageBody: "PACKAGE_BODY",
   typeSpec: "TYPE_SPEC",
   typeBody: "TYPE_BODY",
+  materializedView: "MATERIALIZED_VIEW",
 };
 
 const mapfromOraObjectType = invert(mapToOraObjectType);
@@ -118,9 +120,7 @@ export function getObjectInfoFromPath(path) {
 
     // Convert to regex so we can find and replace
     // p1 = ["/.\/src\//", "/\/PACKAGES\/\w+-spec.sql/"]
-    const schemaRegex = schemaSplit.map(
-      (v) => new RegExp(v.replace("{object-name}", "\\w+"), "gi")
-    );
+    const schemaRegex = schemaSplit.map((v) => new RegExp(v.replace("{object-name}", "\\w+"), "gi"));
 
     // Remove both from path
     // ex: path: "./src/HR/PACKAGES/pck1-spec.sql"
@@ -130,9 +130,7 @@ export function getObjectInfoFromPath(path) {
 
     /** extact object-name*/
     const objectSplit = patternSrc.split("{object-name}");
-    const objectRegex = objectSplit.map(
-      (v) => new RegExp(v.replace("{schema-name}", "\\w+"), "gi")
-    );
+    const objectRegex = objectSplit.map((v) => new RegExp(v.replace("{schema-name}", "\\w+"), "gi"));
     objectName = objectRegex.reduce((acc, val) => acc.replace(val, ""), pathPosix);
 
     // Map to ora types
@@ -159,9 +157,7 @@ export function getObjectInfoFromPath(path) {
     // Get left and right of schema path
     // p1 = ["./deploy/", ".sql"]
     const schemaSplit = patternPck.split("{schema-name}");
-    schema = pathPosix
-      .replace(new RegExp(schemaSplit[0], "gi"), "")
-      .replace(new RegExp(schemaSplit[1], "gi"), "");
+    schema = pathPosix.replace(new RegExp(schemaSplit[0], "gi"), "").replace(new RegExp(schemaSplit[1], "gi"), "");
     objectName = parse(absPath).name;
     return {
       owner: schema,
